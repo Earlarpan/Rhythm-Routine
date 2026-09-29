@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Torien </title>
+    <meta name="description" content="Torien is an AI agent workspace for planning, research, and automation." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">T</div>
+          <div>
+            <p class="eyebrow">Agent OS</p>
+            <h1>Torien</h1>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Primary navigation">
+          <button type="button" class="nav-item active"><span>Overview</span></button>
+          <button type="button" class="nav-item"><span>Agents</span></button>
+          <button type="button" class="nav-item"><span>Workflows</span></button>
+          <button type="button" class="nav-item"><span>Memory</span></button>
+          <button type="button" class="nav-item"><span>Plugins</span></button>
+          <button type="button" class="nav-item"><span>Settings</span></button>
+        </nav>
+
+        <div class="status-card">
+          <div class="status-dot"></div>
+          <div>
+            <p class="eyebrow">System</p>
+            <strong>Agent online</strong>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">AI assistant</p>
+            <h2>Operations Center</h2>
+          </div>
+
+          <div class="header-actions">
+            <button type="button" class="secondary-btn">New task</button>
+            <button type="button" class="primary-btn">Launch agent</button>
+          </div>
+        </header>
+
+        <section class="hero-grid">
+          <div class="hero-card">
+            <div class="agent-header">
+              <div>
+                <p class="eyebrow">Active agent</p>
+                <h3>Torien</h3>
+              </div>
+              <span id="agentStatus" class="status-pill online">Online</span>
+            </div>
+
+            <div class="metrics-row">
+              <div class="metric-box">
+                <span>Tasks</span>
+                <strong>24</strong>
+              </div>
+              <div class="metric-box">
+                <span>Research</span>
+                <strong>18</strong>
+              </div>
+              <div class="metric-box">
+                <span>Actions</span>
+                <strong>92%</strong>
+              </div>
+            </div>
+
+            <div class="tool-row">
+              <button type="button" class="quick-action" data-action="research">Research</button>
+              <button type="button" class="quick-action" data-action="summarize">Summarize</button>
+              <button type="button" class="quick-action" data-action="plan">Plan</button>
+              <button type="button" class="quick-action" data-action="code">Code</button>
+            </div>
+          </div>
+
+          <div class="hero-card alt">
+            <p class="eyebrow">Current mission</p>
+            <h3>Find the fastest path to launch</h3>
+            <ul class="mission-list">
+              <li>Map project priorities</li>
+              <li>Draft action plan</li>
+              <li>Monitor blockers</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="main-panel">
+          <div class="chat-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Conversation</p>
+                <h3>Agent chat</h3>
+              </div>
+              <button type="button" class="ghost-btn">View logs</button>
+            </div>
+
+            <div id="chatThread" class="chat-thread" aria-live="polite">
+              <div class="message agent">
+                <div class="avatar">AI</div>
+                <div class="bubble">
+                  <strong>Torien</strong>
+                  <p>Hello. I can research, plan, summarize, and help build the next move for your workflow.</p>
+                </div>
+              </div>
+
+              <div class="message user">
+                <div class="bubble">
+                  <strong>You</strong>
+                  <p>Build a launch plan for a product sprint.</p>
+                </div>
+              </div>
+
+              <div class="message agent">
+                <div class="avatar">AI</div>
+                <div class="bubble">
+                  <strong>Torien</strong>
+                  <p>Here is the plan: define scope, validate assumptions, assign owners, set milestones, and review risks before execution.</p>
+                </div>
+              </div>
+            </div>
+
+            <form id="promptForm" class="composer">
+              <input id="promptInput" type="text" placeholder="Ask Torien to research, plan, summarize, or code..." aria-label="Ask the AI agent" />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+
+          <aside class="side-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="eyebrow">Tools</p>
+                <h3>Capabilities</h3>
+              </div>
+            </div>
+
+            <div class="capability-list">
+              <div class="capability-item">
+                <span class="capability-icon">R</span>
+                <div>
+                  <strong>Research</strong>
+                  <small>Analyze and summarize sources</small>
+                </div>
+              </div>
+
+              <div class="capability-item">
+                <span class="capability-icon">P</span>
+                <div>
+                  <strong>Planning</strong>
+                  <small>Break work into milestones</small>
+                </div>
+              </div>
+
+              <div class="capability-item">
+                <span class="capability-icon">C</span>
+                <div>
+                  <strong>Code</strong>
+                  <small>Generate implementation steps</small>
+                </div>
+              </div>
+
+              <div class="capability-item">
+                <span class="capability-icon">A</span>
+                <div>
+                  <strong>Automation</strong>
+                  <small>Trigger actions and workflows</small>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
