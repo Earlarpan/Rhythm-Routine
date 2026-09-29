@@ -37,54 +37,144 @@ function buildFallbackReply(prompt) {
   return 'I can help with research, planning, code direction, summaries, and workflow automation. Tell me the exact outcome you want and I will turn it into an action plan.';
 }
 
-app.post('/api/chat', async (req, res) => {
-  const prompt = (req.body && req.body.prompt) || '';
+const providerConfig = {
+  openai: {
+    name: 'OpenAI',
+    keyName: 'OPENAI_API_KEY',
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  },
+  claude: {
+    name: 'Claude',
+    keyName: 'ANTHROPIC_API_KEY',
+    model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
+  },
+  gemini: {
+    name: 'Gemini',
+    keyName: 'GEMINI_API_KEY',
+    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  },
+};
 
-  if (!prompt.trim()) {
-    return res.status(400).json({ error: 'Prompt is required.' });
+const agentInstructions =
+  'You are Torien, a helpful AI operations assistant. Give clear, useful answers for planning, research, execution, and coding tasks.';
+
+app.get('/api/providers', (req, res) => {
+  const providers = Object.entries(providerConfig).map(([id, provider]) => ({
+    id,
+    name: provider.name,
+    model: provider.model,
+    configured: Boolean(process.env[provider.keyName]),
+    keyName: provider.keyName,
+  }));
+
+  res.json({ providers });
+});
+
+function getConversation(body) {
+  if (Array.isArray(body.messages)) {
+    return body.messages
+      .filter((message) => ['user', 'assistant'].includes(message?.role) && typeof message.content === 'string')
+      .slice(-20)
+      .map((message) => ({ role: message.role, content: message.content.trim().slice(0, 8000) }))
+      .filter((message) => message.content);
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
+  return prompt ? [{ role: 'user', content: prompt.slice(0, 8000) }] : [];
+}
 
-  if (!apiKey) {
-    return res.json({ reply: buildFallbackReply(prompt) });
+async function readProviderResponse(response) {
+  const data = await response.json();
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || data?.message || 'The AI provider request failed.');
+    error.statusCode = response.status === 429 ? 429 : 502;
+    throw error;
   }
+  return data;
+}
 
-  try {
-    const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+async function requestProvider(providerId, messages) {
+  const provider = providerConfig[providerId];
+  const apiKey = process.env[provider.keyName];
+  const systemMessage = { role: 'system', content: agentInstructions };
+
+  if (providerId === 'openai') {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are Torien, an AI operations agent. Give concise but useful answers for planning, research, execution, and coding tasks.',
-          },
-          { role: 'user', content: prompt },
-        ],
+        model: provider.model,
+        messages: [systemMessage, ...messages],
         temperature: 0.7,
       }),
     });
+    const data = await readProviderResponse(response);
+    return data?.choices?.[0]?.message?.content?.trim();
+  }
 
-    const data = await openAiResponse.json();
-
-    if (!openAiResponse.ok) {
-      throw new Error(data?.error?.message || 'OpenAI request failed');
-    }
-
-    const reply = data?.choices?.[0]?.message?.content?.trim();
-
-    return res.json({ reply: reply || buildFallbackReply(prompt) });
-  } catch (error) {
-    return res.json({
-      reply: `Torien fallback: ${buildFallbackReply(prompt)}`,
-      warning: error.message,
+  if (providerId === 'claude') {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: provider.model,
+        max_tokens: 1200,
+        system: agentInstructions,
+        messages,
+      }),
     });
+    const data = await readProviderResponse(response);
+    return data?.content?.filter((part) => part.type === 'text').map((part) => part.text).join('\n').trim();
+  }
+
+  const contents = messages.map((message) => ({
+    role: message.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: message.content }],
+  }));
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: agentInstructions }] },
+      contents,
+      generationConfig: { temperature: 0.7 },
+    }),
+  });
+  const data = await readProviderResponse(response);
+  return data?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
+}
+
+app.post('/api/chat', async (req, res) => {
+  const body = req.body || {};
+  const providerId = body.provider || 'openai';
+  const provider = providerConfig[providerId];
+  const messages = getConversation(body);
+
+  if (!provider) {
+    return res.status(400).json({ error: 'Choose a supported provider: OpenAI, Claude, or Gemini.' });
+  }
+
+  if (!messages.length) {
+    return res.status(400).json({ error: 'Prompt is required.' });
+  }
+
+  if (!process.env[provider.keyName]) {
+    if (!body.provider) {
+      return res.json({ reply: buildFallbackReply(messages[messages.length - 1].content) });
+    }
+    return res.status(503).json({ error: `${provider.keyName} is not configured on the server.` });
+  }
+
+  try {
+    const reply = await requestProvider(providerId, messages);
+    return res.json({ reply: reply || 'The provider returned an empty response.' });
+  } catch (error) {
+    return res.status(error.statusCode || 502).json({ error: error.message });
   }
 });
 

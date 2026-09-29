@@ -23,8 +23,8 @@
         </div>
 
         <nav class="sidebar-nav" aria-label="Primary navigation">
-          <button type="button" class="nav-item active"><span>Overview</span></button>
-          <button type="button" class="nav-item"><span>Agents</span></button>
+          <button type="button" class="nav-item active" data-view="overview"><span>Overview</span></button>
+          <button type="button" class="nav-item" data-view="agents"><span>Agents</span></button>
           <button type="button" class="nav-item"><span>Workflows</span></button>
           <button type="button" class="nav-item"><span>Memory</span></button>
           <button type="button" class="nav-item"><span>Plugins</span></button>
@@ -44,7 +44,7 @@
         <header class="topbar">
           <div>
             <p class="eyebrow">AI assistant</p>
-            <h2>Operations Center</h2>
+            <h2 id="pageTitle">Operations Center</h2>
           </div>
 
           <div class="header-actions">
@@ -53,6 +53,7 @@
           </div>
         </header>
 
+        <section id="overviewView" class="page-view">
         <section class="hero-grid">
           <div class="hero-card">
             <div class="agent-header">
@@ -180,6 +181,58 @@
               </div>
             </div>
           </aside>
+        </section>
+        </section>
+
+        <section id="agentsView" class="page-view agents-view" hidden>
+          <header class="agents-heading">
+            <div>
+              <p class="eyebrow">Provider workspace</p>
+              <h3>Choose an AI</h3>
+              <p class="agents-description">Chat with OpenAI, Claude, or Gemini from one workspace.</p>
+            </div>
+          </header>
+
+          <div class="provider-tabs" role="tablist" aria-label="AI providers">
+            <button type="button" class="provider-tab active" role="tab" aria-selected="true" data-provider="openai">
+              <span>ChatGPT / OpenAI</span><small data-provider-state="openai">Checking</small>
+            </button>
+            <button type="button" class="provider-tab" role="tab" aria-selected="false" data-provider="claude">
+              <span>Claude</span><small data-provider-state="claude">Checking</small>
+            </button>
+            <button type="button" class="provider-tab" role="tab" aria-selected="false" data-provider="gemini">
+              <span>Gemini</span><small data-provider-state="gemini">Checking</small>
+            </button>
+          </div>
+
+          <div class="provider-notice" id="providerNotice" role="status" aria-live="polite"></div>
+
+          <div class="agents-chat-layout">
+            <section class="chat-panel provider-chat-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Selected provider</p>
+                  <h3 id="providerHeading">ChatGPT / OpenAI</h3>
+                </div>
+                <span id="providerModel" class="status-pill">Not connected</span>
+              </div>
+
+              <div id="providerChatThread" class="chat-thread provider-chat-thread" aria-live="polite"></div>
+
+              <form id="providerPromptForm" class="composer">
+                <textarea id="providerPromptInput" rows="2" placeholder="Connect this provider to start chatting..." aria-label="Message the selected AI provider" disabled></textarea>
+                <button id="providerSendButton" type="submit" disabled>Send</button>
+              </form>
+            </section>
+
+            <aside class="provider-details">
+              <p class="eyebrow">Connection</p>
+              <h3 id="providerConnectionHeading">Set up OpenAI</h3>
+              <p id="providerConnectionText">Add the provider API key on the server to enable chat.</p>
+              <a id="providerKeyLink" href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Get an API key</a>
+              <p class="provider-safety-note">API keys stay on the server. Anyone who can access this public app can use configured keys and incur API charges.</p>
+            </aside>
+          </div>
         </section>
       </main>
     </div>
