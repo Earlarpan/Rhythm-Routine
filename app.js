@@ -1,7 +1,6 @@
 const chatThread = document.getElementById('chatThread');
 const promptForm = document.getElementById('promptForm');
 const promptInput = document.getElementById('promptInput');
-const quickActions = document.querySelectorAll('.quick-action');
 const navItems = document.querySelectorAll('.nav-item');
 const appShell = document.querySelector('.app-shell');
 const navToggle = document.getElementById('navToggle');
@@ -16,46 +15,27 @@ const sectionEyebrow = document.getElementById('sectionEyebrow');
 const sectionHeading = document.getElementById('sectionHeading');
 const sectionDescription = document.getElementById('sectionDescription');
 const pageTitle = document.getElementById('pageTitle');
-const providerButtons = document.querySelectorAll('.provider-tab');
-const providerNotice = document.getElementById('providerNotice');
-const providerHeading = document.getElementById('providerHeading');
-const providerModel = document.getElementById('providerModel');
-const providerChatThread = document.getElementById('providerChatThread');
-const providerPromptForm = document.getElementById('providerPromptForm');
-const providerPromptInput = document.getElementById('providerPromptInput');
-const providerSendButton = document.getElementById('providerSendButton');
-const providerConnectionHeading = document.getElementById('providerConnectionHeading');
-const providerConnectionText = document.getElementById('providerConnectionText');
-const providerKeyLink = document.getElementById('providerKeyLink');
-
-const providerDetails = {
-  openai: {
-    name: 'ChatGPT / OpenAI',
-    env: 'OPENAI_API_KEY',
-    url: 'https://platform.openai.com/api-keys',
-    greeting: 'Chat with OpenAI using your API account. This uses API billing, which is separate from a ChatGPT subscription.'
-  },
-  claude: {
-    name: 'Claude',
-    env: 'ANTHROPIC_API_KEY',
-    url: 'https://console.anthropic.com/settings/keys',
-    greeting: 'Chat with Claude using your Anthropic API account.'
-  },
-  gemini: {
-    name: 'Gemini',
-    env: 'GEMINI_API_KEY',
-    url: 'https://aistudio.google.com/app/apikey',
-    greeting: 'Chat with Gemini using your Google AI API account.'
-  }
+const agentCards = document.querySelectorAll('.agent-card');
+const agentGallery = document.getElementById('agentGallery');
+const agentWorkspace = document.getElementById('agentWorkspace');
+const backToAgents = document.getElementById('backToAgents');
+const agentHeading = document.getElementById('agentHeading');
+const engineStatus = document.getElementById('engineStatus');
+const engineNotice = document.getElementById('engineNotice');
+const agentChatThread = document.getElementById('agentChatThread');
+const agentPromptForm = document.getElementById('agentPromptForm');
+const agentPromptInput = document.getElementById('agentPromptInput');
+const agentSendButton = document.getElementById('agentSendButton');
+const agentNames = {
+  general: 'Torien',
+  research: 'Research Agent',
+  planning: 'Planning Agent',
+  code: 'Code Agent',
+  automation: 'Automation Agent'
 };
-
-const providerThreads = Object.fromEntries(
-  Object.entries(providerDetails).map(([id, provider]) => [id, [
-    { role: 'assistant', content: `${provider.name} is selected. ${provider.greeting}` }
-  ]])
-);
-let selectedProvider = 'openai';
-let providerStatus = {};
+const agentThreads = {};
+let selectedAgent = 'general';
+let engineConfigured = false;
 
 const sectionContent = {
   workflows: {
@@ -68,19 +48,19 @@ const sectionContent = {
     title: 'Memory',
     eyebrow: 'Conversation data',
     heading: 'No saved memory',
-    description: 'Provider conversations stay in this browser session and are cleared when the page reloads.'
+    description: 'Agent conversations stay in this browser session and are cleared when the page reloads.'
   },
   plugins: {
     title: 'Plugins',
     eyebrow: 'Extensions',
     heading: 'No plugins connected',
-    description: 'Torien currently supports provider chat through OpenAI, Claude, and Gemini. Additional plugin actions are not configured.'
+    description: 'External plugins are not connected. Torien’s built-in task agents are available from the Agents section.'
   },
   settings: {
     title: 'Settings',
     eyebrow: 'Configuration',
-    heading: 'Provider configuration',
-    description: 'Provider API keys are configured as server-side environment variables in your hosting project. They are not stored in this browser.'
+    heading: 'Torien engine configuration',
+    description: 'Connect the server-side AI engine with OPENAI_API_KEY in your hosting environment. The key stays on the server and is not stored in this browser.'
   }
 };
 
@@ -110,79 +90,81 @@ function createMessage(role, author, text) {
   chatThread.scrollTop = chatThread.scrollHeight;
 }
 
-function createProviderMessage(role, text) {
+function createAgentMessage(role, text, threadElement = agentChatThread, agentId = selectedAgent) {
   const wrapper = document.createElement('div');
   wrapper.className = `message ${role === 'user' ? 'user' : 'agent'}`;
 
   if (role !== 'user') {
     const avatar = document.createElement('div');
     avatar.className = 'avatar';
-    avatar.textContent = selectedProvider === 'openai' ? 'AI' : providerDetails[selectedProvider].name.slice(0, 2).toUpperCase();
+    avatar.textContent = 'T';
     wrapper.appendChild(avatar);
   }
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   const label = document.createElement('strong');
-  label.textContent = role === 'user' ? 'You' : providerDetails[selectedProvider].name;
+  label.textContent = role === 'user' ? 'You' : agentNames[agentId];
   const messageText = document.createElement('p');
   messageText.textContent = text;
   bubble.append(label, messageText);
   wrapper.appendChild(bubble);
-  providerChatThread.appendChild(wrapper);
-  providerChatThread.scrollTop = providerChatThread.scrollHeight;
+  threadElement.appendChild(wrapper);
+  threadElement.scrollTop = threadElement.scrollHeight;
 }
 
-function renderProviderThread() {
-  providerChatThread.replaceChildren();
-  providerThreads[selectedProvider].forEach((message) => createProviderMessage(message.role, message.content));
+function renderAgentThread(agentId) {
+  const thread = agentThreads[agentId];
+  agentChatThread.replaceChildren();
+  thread.forEach((message) => createAgentMessage(message.role, message.content, agentChatThread, agentId));
 }
 
-function renderProviderStatus() {
-  const details = providerDetails[selectedProvider];
-  const status = providerStatus[selectedProvider];
-  const configured = Boolean(status?.configured);
-
-  providerButtons.forEach((button) => {
-    const isSelected = button.dataset.provider === selectedProvider;
-    button.classList.toggle('active', isSelected);
-    button.setAttribute('aria-selected', String(isSelected));
-    const state = button.querySelector(`[data-provider-state="${button.dataset.provider}"]`);
-    const connected = Boolean(providerStatus[button.dataset.provider]?.configured);
-    state.textContent = connected ? 'Connected' : 'Needs key';
-    state.classList.toggle('connected', connected);
-  });
-
-  providerHeading.textContent = details.name;
-  providerModel.textContent = configured ? status.model : 'Not connected';
-  providerModel.classList.toggle('online', configured);
-  providerConnectionHeading.textContent = configured ? `${details.name} connected` : `Set up ${details.name}`;
-  providerConnectionText.textContent = configured
-    ? `Ready to chat with ${status.model}.`
-    : `Add ${details.env} in Vercel Project Settings > Environment Variables, then redeploy. For local use, set it in your shell before starting the server.`;
-  providerKeyLink.href = details.url;
-  providerKeyLink.textContent = configured ? 'Manage provider API key' : 'Get an API key';
-  providerPromptInput.disabled = !configured;
-  providerSendButton.disabled = !configured;
-  providerPromptInput.placeholder = configured
-    ? `Message ${details.name}...`
-    : `Add ${details.env} to enable ${details.name}...`;
-  providerNotice.textContent = configured
-    ? `${details.name} is ready. Your conversation stays separate from the other providers.`
-    : `${details.name} needs a server-side API key before it can respond.`;
-  providerNotice.classList.toggle('connected', configured);
+function updateEngineStatus() {
+  engineStatus.textContent = engineConfigured ? 'Ready' : 'Needs setup';
+  engineStatus.classList.toggle('online', engineConfigured);
+  agentSendButton.disabled = !engineConfigured;
+  agentPromptInput.disabled = !engineConfigured;
+  agentPromptInput.placeholder = engineConfigured
+    ? `Ask the ${agentNames[selectedAgent]}...`
+    : 'Connect Torien’s AI engine in Settings to start chatting.';
+  engineNotice.textContent = engineConfigured
+    ? 'Torien is ready. Each specialist uses its own instructions for this task.'
+    : 'To enable live answers, add OPENAI_API_KEY to your Vercel project’s Environment Variables and redeploy. Keep this public app access-controlled to prevent unexpected usage.';
 }
 
-async function loadProviderStatus() {
+async function loadAgentStatus() {
   try {
-    const response = await fetch('/api/providers');
-    if (!response.ok) throw new Error('Could not load provider status.');
+    const response = await fetch('/api/agents');
+    if (!response.ok) throw new Error('Could not load Torien status.');
     const data = await response.json();
-    providerStatus = Object.fromEntries(data.providers.map((provider) => [provider.id, provider]));
-    renderProviderStatus();
+    engineConfigured = Boolean(data.configured);
+    agentCards.forEach((card) => {
+      const status = card.querySelector('.agent-card-status');
+      status.textContent = engineConfigured ? 'Ready' : 'Needs setup';
+      status.classList.toggle('connected', engineConfigured);
+    });
+    if (!agentWorkspace.hidden) updateEngineStatus();
   } catch (error) {
-    providerNotice.textContent = 'Could not check provider connections. Make sure the Torien server is running.';
+    engineConfigured = false;
+    engineNotice.textContent = 'Torien could not check its connection. Make sure the server is running.';
   }
+}
+
+function openAgent(agentId) {
+  selectedAgent = agentId;
+  agentGallery.hidden = true;
+  agentWorkspace.hidden = false;
+  agentHeading.textContent = agentNames[agentId];
+
+  if (!agentThreads[agentId]) {
+    agentThreads[agentId] = [{
+      role: 'assistant',
+      content: `${agentNames[agentId]} is ready for ${agentId === 'general' ? 'general questions' : `${agentId}-focused work`}. Share your task, context, and any constraints.`
+    }];
+  }
+
+  renderAgentThread(agentId);
+  updateEngineStatus();
 }
 
 function showView(view, updateLocation = true) {
@@ -204,7 +186,11 @@ function showView(view, updateLocation = true) {
     window.location.hash = activeView;
   }
 
-  if (activeView === 'agents') loadProviderStatus();
+  if (activeView === 'agents') {
+    agentGallery.hidden = false;
+    agentWorkspace.hidden = true;
+    loadAgentStatus();
+  }
 }
 
 function setMobileNavigation(open) {
@@ -216,40 +202,6 @@ function setMobileNavigation(open) {
   navToggle.setAttribute('aria-label', shouldOpen ? 'Close navigation' : 'Open navigation');
 }
 
-function buildResponse(prompt) {
-  const trimmed = prompt.toLowerCase();
-
-  if (trimmed.includes('summarize') || trimmed.includes('summary')) {
-    return 'Here is the summary: focus on the core objective, list the main blockers, highlight the most important decisions, and finish with a clear action plan for the next 48 hours.';
-  }
-
-  if (trimmed.includes('plan') || trimmed.includes('roadmap') || trimmed.includes('launch') || trimmed.includes('milestone')) {
-    return 'Recommended roadmap: 1) define scope and assumptions, 2) assign owners and tasks, 3) validate critical risks, 4) ship an MVP, 5) review feedback and iterate weekly.';
-  }
-
-  if (trimmed.includes('code') || trimmed.includes('build') || trimmed.includes('implement')) {
-    return 'Implementation approach: start with the smallest working version, define architecture clearly, build the core workflow first, test the critical path, then add polish and automation.';
-  }
-
-  if (trimmed.includes('research') || trimmed.includes('analyze')) {
-    return 'Research direction: gather the target audience, compare market patterns, identify the key constraints, and map the strongest opportunities before moving into execution.';
-  }
-
-  if (trimmed.includes('fix') || trimmed.includes('bug')) {
-    return 'Fix strategy: reproduce the issue, isolate the root cause, patch the smallest failing layer, verify the outcome, and confirm there are no regressions in adjacent flows.';
-  }
-
-  if (trimmed.includes('email') || trimmed.includes('message')) {
-    return 'Draft message: "Thanks for the update. I have reviewed the current state and recommend we progress with the next milestone while tracking the key risks closely."';
-  }
-
-  if (trimmed.includes('schedule') || trimmed.includes('calendar') || trimmed.includes('task')) {
-    return 'Proposed schedule: start with stakeholder alignment, reserve deep work blocks, schedule review checkpoints, and leave one buffer slot for blockers or last-minute changes.';
-  }
-
-  return 'I can help with research, planning, code direction, summaries, and workflow automation. Tell me the exact outcome you want and I will turn it into an action plan.';
-}
-
 async function handlePrompt(inputText) {
   const text = inputText.trim();
   if (!text) return;
@@ -258,45 +210,23 @@ async function handlePrompt(inputText) {
   promptInput.value = '';
 
   try {
-    const response = await fetch('/api/chat', {
+    const response = await fetch('/api/agent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: text }),
+      body: JSON.stringify({ agent: 'general', messages: [{ role: 'user', content: text }] }),
     });
 
     const data = await response.json();
-    const reply = data?.reply || buildResponse(text);
-    createMessage('agent', 'Torien', reply);
+    if (!response.ok) throw new Error(data.error || 'Torien could not complete the request.');
+    createMessage('agent', 'Torien', data.reply);
   } catch (error) {
-    createMessage('agent', 'Torien', buildResponse(text));
+    createMessage('agent', 'Torien', error.message);
   }
-}
-
-function triggerAction(actionKey) {
-  const promptMap = {
-    research: 'Research the best path for this initiative and highlight the key risks, stakeholders, and likely bottlenecks.',
-    summarize: 'Summarize this project in a crisp executive overview with priorities, blockers, and the next 3 actions.',
-    plan: 'Create a clear launch plan with milestones, owners, success checkpoints, and a delivery timeline.',
-    code: 'Suggest the best implementation plan and the core technical steps to build this feature safely and quickly.'
-  };
-
-  if (promptMap[actionKey]) {
-    handlePrompt(promptMap[actionKey]);
-    return;
-  }
-
-  handlePrompt('Help me with the next best action for this workflow.');
 }
 
 promptForm.addEventListener('submit', (event) => {
   event.preventDefault();
   handlePrompt(promptInput.value);
-});
-
-quickActions.forEach((button) => {
-  button.addEventListener('click', () => {
-    triggerAction(button.dataset.action);
-  });
 });
 
 navItems.forEach((item) => {
@@ -320,41 +250,43 @@ window.addEventListener('resize', () => {
   if (window.innerWidth > 900) setMobileNavigation(false);
 });
 
-providerButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    selectedProvider = button.dataset.provider;
-    renderProviderThread();
-    renderProviderStatus();
-  });
+agentCards.forEach((card) => {
+  card.addEventListener('click', () => openAgent(card.dataset.agent));
 });
 
-providerPromptForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const prompt = providerPromptInput.value.trim();
-  if (!prompt || providerSendButton.disabled) return;
+backToAgents.addEventListener('click', () => {
+  agentWorkspace.hidden = true;
+  agentGallery.hidden = false;
+});
 
-  providerThreads[selectedProvider].push({ role: 'user', content: prompt });
-  renderProviderThread();
-  providerPromptInput.value = '';
-  providerSendButton.disabled = true;
-  providerSendButton.textContent = 'Sending...';
+agentPromptForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const prompt = agentPromptInput.value.trim();
+  if (!prompt || agentSendButton.disabled) return;
+
+  const agentId = selectedAgent;
+  const thread = agentThreads[agentId];
+  thread.push({ role: 'user', content: prompt });
+  renderAgentThread(agentId);
+  agentPromptInput.value = '';
+  agentSendButton.disabled = true;
+  agentSendButton.textContent = 'Working...';
 
   try {
-    const response = await fetch('/api/chat', {
+    const response = await fetch('/api/agent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider: selectedProvider, messages: providerThreads[selectedProvider] }),
+      body: JSON.stringify({ agent: agentId, messages: thread }),
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'The provider request failed.');
-    providerThreads[selectedProvider].push({ role: 'assistant', content: data.reply });
+    if (!response.ok) throw new Error(data.error || 'Torien could not complete the request.');
+    thread.push({ role: 'assistant', content: data.reply });
   } catch (error) {
-    providerThreads[selectedProvider].push({ role: 'assistant', content: error.message });
+    thread.push({ role: 'assistant', content: error.message });
   } finally {
-    renderProviderThread();
-    renderProviderStatus();
-    providerSendButton.textContent = 'Send';
-    if (providerStatus[selectedProvider]?.configured) providerSendButton.disabled = false;
+    if (selectedAgent === agentId && !agentWorkspace.hidden) renderAgentThread(agentId);
+    agentSendButton.textContent = 'Send';
+    agentSendButton.disabled = !engineConfigured;
   }
 });
 

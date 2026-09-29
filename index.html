@@ -84,12 +84,6 @@
               </div>
             </div>
 
-            <div class="tool-row">
-              <button type="button" class="quick-action" data-action="research">Research</button>
-              <button type="button" class="quick-action" data-action="summarize">Summarize</button>
-              <button type="button" class="quick-action" data-action="plan">Plan</button>
-              <button type="button" class="quick-action" data-action="code">Code</button>
-            </div>
           </div>
 
           <div class="hero-card alt">
@@ -144,48 +138,6 @@
             </form>
           </div>
 
-          <aside class="side-panel">
-            <div class="panel-header compact">
-              <div>
-                <p class="eyebrow">Tools</p>
-                <h3>Capabilities</h3>
-              </div>
-            </div>
-
-            <div class="capability-list">
-              <div class="capability-item">
-                <span class="capability-icon">R</span>
-                <div>
-                  <strong>Research</strong>
-                  <small>Analyze and summarize sources</small>
-                </div>
-              </div>
-
-              <div class="capability-item">
-                <span class="capability-icon">P</span>
-                <div>
-                  <strong>Planning</strong>
-                  <small>Break work into milestones</small>
-                </div>
-              </div>
-
-              <div class="capability-item">
-                <span class="capability-icon">C</span>
-                <div>
-                  <strong>Code</strong>
-                  <small>Generate implementation steps</small>
-                </div>
-              </div>
-
-              <div class="capability-item">
-                <span class="capability-icon">A</span>
-                <div>
-                  <strong>Automation</strong>
-                  <small>Trigger actions and workflows</small>
-                </div>
-              </div>
-            </div>
-          </aside>
         </section>
         </section>
 
@@ -198,52 +150,61 @@
         <section id="agentsView" class="page-view agents-view" hidden>
           <header class="agents-heading">
             <div>
-              <p class="eyebrow">Provider workspace</p>
-              <h3>Choose an AI</h3>
-              <p class="agents-description">Chat with OpenAI, Claude, or Gemini from one workspace.</p>
+              <p class="eyebrow">Torien specialists</p>
+              <h3>Choose an agent</h3>
+              <p class="agents-description">Each agent is tailored to a specific kind of work.</p>
             </div>
           </header>
 
-          <div class="provider-tabs" role="tablist" aria-label="AI providers">
-            <button type="button" class="provider-tab active" role="tab" aria-selected="true" data-provider="openai">
-              <span>ChatGPT / OpenAI</span><small data-provider-state="openai">Checking</small>
+          <div id="agentGallery" class="agent-gallery" aria-label="Torien agents">
+            <button type="button" class="agent-card" data-agent="research">
+              <span class="capability-icon">R</span>
+              <strong>Research Agent</strong>
+              <span>Analyze supplied sources, extract findings, and explain evidence and uncertainty.</span>
+              <small class="agent-card-status">Torien</small>
             </button>
-            <button type="button" class="provider-tab" role="tab" aria-selected="false" data-provider="claude">
-              <span>Claude</span><small data-provider-state="claude">Checking</small>
+            <button type="button" class="agent-card" data-agent="planning">
+              <span class="capability-icon">P</span>
+              <strong>Planning Agent</strong>
+              <span>Turn goals into milestones, priorities, owners, and practical next steps.</span>
+              <small class="agent-card-status">Torien</small>
             </button>
-            <button type="button" class="provider-tab" role="tab" aria-selected="false" data-provider="gemini">
-              <span>Gemini</span><small data-provider-state="gemini">Checking</small>
+            <button type="button" class="agent-card" data-agent="code">
+              <span class="capability-icon">C</span>
+              <strong>Code Agent</strong>
+              <span>Explain code, debug errors, and draft implementations with verification steps.</span>
+              <small class="agent-card-status">Torien</small>
+            </button>
+            <button type="button" class="agent-card" data-agent="automation">
+              <span class="capability-icon">A</span>
+              <strong>Automation Agent</strong>
+              <span>Design repeatable workflows and explain what can and cannot be automated.</span>
+              <small class="agent-card-status">Torien</small>
             </button>
           </div>
 
-          <div class="provider-notice" id="providerNotice" role="status" aria-live="polite"></div>
-
-          <div class="agents-chat-layout">
-            <section class="chat-panel provider-chat-panel">
+          <section id="agentWorkspace" class="agent-workspace" hidden>
+            <header class="agent-workspace-header">
+              <button id="backToAgents" class="secondary-btn" type="button">All agents</button>
               <div class="panel-header">
                 <div>
-                  <p class="eyebrow">Selected provider</p>
-                  <h3 id="providerHeading">ChatGPT / OpenAI</h3>
+                  <p class="eyebrow">Task specialist</p>
+                  <h3 id="agentHeading">Torien Agent</h3>
                 </div>
-                <span id="providerModel" class="status-pill">Not connected</span>
+                <span id="engineStatus" class="status-pill">Checking</span>
               </div>
+            </header>
 
-              <div id="providerChatThread" class="chat-thread provider-chat-thread" aria-live="polite"></div>
+            <p id="engineNotice" class="engine-notice" role="status" aria-live="polite"></p>
+            <div class="chat-panel agent-chat-panel">
+              <div id="agentChatThread" class="chat-thread agent-chat-thread" aria-live="polite"></div>
 
-              <form id="providerPromptForm" class="composer">
-                <textarea id="providerPromptInput" rows="2" placeholder="Connect this provider to start chatting..." aria-label="Message the selected AI provider" disabled></textarea>
-                <button id="providerSendButton" type="submit" disabled>Send</button>
+              <form id="agentPromptForm" class="composer">
+                <textarea id="agentPromptInput" rows="2" placeholder="Ask this Torien agent..." aria-label="Message the selected Torien agent" disabled></textarea>
+                <button id="agentSendButton" type="submit" disabled>Send</button>
               </form>
-            </section>
-
-            <aside class="provider-details">
-              <p class="eyebrow">Connection</p>
-              <h3 id="providerConnectionHeading">Set up OpenAI</h3>
-              <p id="providerConnectionText">Add the provider API key on the server to enable chat.</p>
-              <a id="providerKeyLink" href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Get an API key</a>
-              <p class="provider-safety-note">API keys stay on the server. Anyone who can access this public app can use configured keys and incur API charges.</p>
-            </aside>
-          </div>
+            </div>
+          </section>
         </section>
       </main>
     </div>

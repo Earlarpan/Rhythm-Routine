@@ -22,17 +22,15 @@ http://localhost:3000
 - AI assistant interface named Torien
 - Sidebar navigation for separate workspace views
 - Chat flow that talks to a local backend
-- Separate Agents page with OpenAI, Claude, and Gemini provider chat
-- Provider API keys stay on the server and are never placed in browser code
-- Fallback responses when no API key is configured
+- Agents page with task-specific Research, Planning, Code, and Automation assistants
+- Each Torien agent has its own instructions and conversation
+- The single AI engine key stays on the server and is never placed in browser code
 
-## Provider API setup
+## Torien AI setup
 
 ```bash
 export OPENAI_API_KEY="your_key_here"
-export ANTHROPIC_API_KEY="your_key_here"
-export GEMINI_API_KEY="your_key_here"
 npm start
 ```
 
-Set only the keys for providers you plan to use. ChatGPT access uses the OpenAI API and is billed separately from a ChatGPT subscription. For Vercel, add the keys under **Project Settings → Environment Variables**, then redeploy. Keep this app private or add access controls before configuring keys; visitors can use configured provider keys and incur API charges.
+Torien’s custom agents use one server-side language-model engine. For Vercel, add `OPENAI_API_KEY` under **Project Settings → Environment Variables**, then redeploy. API usage may be billed by the model service. Keep this app private or add access controls before configuring the key, because public visitors can use the engine and incur charges.
