@@ -148,10 +148,46 @@ button {
   padding: 10px 6px 0;
 }
 
+.topbar-leading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.menu-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  margin: 4px 0;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.nav-backdrop[hidden] {
+  display: none;
+}
+
+.nav-backdrop {
+  display: none;
+}
+
 .topbar h2 {
   margin: 8px 0 0;
   font-size: clamp(2rem, 3vw, 3rem);
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
 }
 
 .header-actions {
@@ -456,6 +492,23 @@ button {
   display: none !important;
 }
 
+.section-page {
+  min-height: 320px;
+  padding: 12px 6px;
+}
+
+.section-page h3 {
+  margin: 12px 0 8px;
+  font-size: 1.5rem;
+}
+
+.section-page > p:last-child {
+  max-width: 640px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .agents-view {
   display: grid;
   gap: 18px;
@@ -606,7 +659,46 @@ button {
 
 @media (max-width: 980px) {
   .app-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px;
+    gap: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    z-index: 31;
+    inset: 0 auto 0 0;
+    width: min(84vw, 300px);
+    overflow-y: auto;
+    border-radius: 0 18px 18px 0;
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform 0.22s ease, visibility 0.22s ease;
+  }
+
+  .app-shell.nav-open .sidebar {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-backdrop:not([hidden]) {
+    display: block;
+    position: fixed;
+    z-index: 30;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background: rgba(2, 8, 14, 0.68);
+  }
+
+  body.nav-open {
+    overflow: hidden;
   }
 
   .hero-grid,
@@ -617,6 +709,59 @@ button {
 }
 
 @media (max-width: 620px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 4px 0 0;
+  }
+
+  .topbar-leading {
+    width: 100%;
+  }
+
+  .topbar h2 {
+    font-size: 1.7rem;
+    line-height: 1.2;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .header-actions button {
+    padding: 9px 12px;
+  }
+
+  .metrics-row {
+    gap: 8px;
+  }
+
+  .metric-box {
+    min-width: 0;
+    padding: 12px 9px;
+  }
+
+  .metric-box strong {
+    font-size: 1.4rem;
+  }
+
+  .chat-panel,
+  .side-panel {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .bubble {
+    max-width: calc(100% - 44px);
+    overflow-wrap: anywhere;
+  }
+
   .provider-tabs {
     grid-template-columns: 1fr;
   }

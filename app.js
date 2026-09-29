@@ -3,11 +3,18 @@ const promptForm = document.getElementById('promptForm');
 const promptInput = document.getElementById('promptInput');
 const quickActions = document.querySelectorAll('.quick-action');
 const navItems = document.querySelectorAll('.nav-item');
+const appShell = document.querySelector('.app-shell');
+const navToggle = document.getElementById('navToggle');
+const navBackdrop = document.getElementById('navBackdrop');
 const primaryAction = document.querySelector('.primary-btn');
 const secondaryAction = document.querySelector('.secondary-btn');
 const ghostAction = document.querySelector('.ghost-btn');
 const overviewView = document.getElementById('overviewView');
 const agentsView = document.getElementById('agentsView');
+const sectionView = document.getElementById('sectionView');
+const sectionEyebrow = document.getElementById('sectionEyebrow');
+const sectionHeading = document.getElementById('sectionHeading');
+const sectionDescription = document.getElementById('sectionDescription');
 const pageTitle = document.getElementById('pageTitle');
 const providerButtons = document.querySelectorAll('.provider-tab');
 const providerNotice = document.getElementById('providerNotice');
@@ -49,6 +56,33 @@ const providerThreads = Object.fromEntries(
 );
 let selectedProvider = 'openai';
 let providerStatus = {};
+
+const sectionContent = {
+  workflows: {
+    title: 'Workflows',
+    eyebrow: 'Automation',
+    heading: 'No workflows configured',
+    description: 'Workflow creation and automatic triggers are not available yet.'
+  },
+  memory: {
+    title: 'Memory',
+    eyebrow: 'Conversation data',
+    heading: 'No saved memory',
+    description: 'Provider conversations stay in this browser session and are cleared when the page reloads.'
+  },
+  plugins: {
+    title: 'Plugins',
+    eyebrow: 'Extensions',
+    heading: 'No plugins connected',
+    description: 'Torien currently supports provider chat through OpenAI, Claude, and Gemini. Additional plugin actions are not configured.'
+  },
+  settings: {
+    title: 'Settings',
+    eyebrow: 'Configuration',
+    heading: 'Provider configuration',
+    description: 'Provider API keys are configured as server-side environment variables in your hosting project. They are not stored in this browser.'
+  }
+};
 
 function createMessage(role, author, text) {
   const wrapper = document.createElement('div');
@@ -152,17 +186,34 @@ async function loadProviderStatus() {
 }
 
 function showView(view, updateLocation = true) {
-  const activeView = view === 'agents' ? 'agents' : 'overview';
+  const activeView = ['overview', 'agents', ...Object.keys(sectionContent)].includes(view) ? view : 'overview';
+  const section = sectionContent[activeView];
   overviewView.hidden = activeView !== 'overview';
   agentsView.hidden = activeView !== 'agents';
+  sectionView.hidden = !section;
   navItems.forEach((item) => item.classList.toggle('active', item.dataset.view === activeView));
-  pageTitle.textContent = activeView === 'agents' ? 'AI Agents' : 'Operations Center';
+  pageTitle.textContent = activeView === 'overview' ? 'Operations Center' : activeView === 'agents' ? 'AI Agents' : section.title;
+
+  if (section) {
+    sectionEyebrow.textContent = section.eyebrow;
+    sectionHeading.textContent = section.heading;
+    sectionDescription.textContent = section.description;
+  }
 
   if (updateLocation && window.location.hash !== `#${activeView}`) {
     window.location.hash = activeView;
   }
 
   if (activeView === 'agents') loadProviderStatus();
+}
+
+function setMobileNavigation(open) {
+  const shouldOpen = open && window.matchMedia('(max-width: 900px)').matches;
+  appShell.classList.toggle('nav-open', shouldOpen);
+  navBackdrop.hidden = !shouldOpen;
+  document.body.classList.toggle('nav-open', shouldOpen);
+  navToggle.setAttribute('aria-expanded', String(shouldOpen));
+  navToggle.setAttribute('aria-label', shouldOpen ? 'Close navigation' : 'Open navigation');
 }
 
 function buildResponse(prompt) {
@@ -250,14 +301,23 @@ quickActions.forEach((button) => {
 
 navItems.forEach((item) => {
   item.addEventListener('click', () => {
-    if (item.dataset.view) {
-      showView(item.dataset.view);
-      return;
-    }
-
-    showView('overview');
-    createMessage('agent', 'Torien', `${item.textContent.trim()} is not available yet.`);
+    showView(item.dataset.view || 'overview');
+    setMobileNavigation(false);
   });
+});
+
+navToggle.addEventListener('click', () => {
+  setMobileNavigation(navToggle.getAttribute('aria-expanded') !== 'true');
+});
+
+navBackdrop.addEventListener('click', () => setMobileNavigation(false));
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') setMobileNavigation(false);
+});
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) setMobileNavigation(false);
 });
 
 providerButtons.forEach((button) => {
@@ -298,7 +358,10 @@ providerPromptForm.addEventListener('submit', async (event) => {
   }
 });
 
-window.addEventListener('hashchange', () => showView(window.location.hash.slice(1), false));
+window.addEventListener('hashchange', () => {
+  showView(window.location.hash.slice(1), false);
+  setMobileNavigation(false);
+});
 showView(window.location.hash.slice(1), false);
 
 if (primaryAction) {
