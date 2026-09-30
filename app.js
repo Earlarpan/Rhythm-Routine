@@ -53,7 +53,7 @@ function showView(v) {
   if (navItems) navItems.forEach(i => i.classList.toggle('active', i.dataset.view === av));
   if (pageTitle) pageTitle.textContent = av === 'overview' ? 'Operations Center' : av === 'agents' ? 'AI Agents' : s.title;
   if (s && sectionEyebrow && sectionHeading && sectionDescription) { sectionEyebrow.textContent = s.eyebrow; sectionHeading.textContent = s.heading; sectionDescription.textContent = s.description; }
-  if (av === 'agents') { if (agentGallery) agentGallery.hidden = false; if (agentWorkspace) agentWorkspace.hidden = true; loadAgentStatus(); }
+  if (av === 'agents') { if (agentGallery) agentGallery.hidden = false; if (agentWorkspace) aria-hidden = true; loadAgentStatus(); }
 }
 
 async function handlePrompt(txt) {
@@ -92,7 +92,39 @@ function initDashboardCore() {
   loadAgentStatus();
 }
 
-// Global Launcher Loop (Binds initialization settings seamlessly at page startup)
-document.addEventListener("DOMContentLoaded", () => {
-  initDashboardCore();
-});
+// 🔐 Continuous Clerk Verification Engine
+async function initializeClerkAuthentication() {
+  if (!window.Clerk) {
+    setTimeout(initializeClerkAuthentication, 100);
+    return;
+  }
+
+  try {
+    await window.Clerk.load();
+    
+    if (window.Clerk.user) {
+      // ✅ Signed In! Drop the shield wall, draw dashboard, mount profile button
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('appContainer').style.display = 'flex';
+      
+      const profileTarget = document.getElementById('userProfileButton');
+      if (profileTarget) window.Clerk.mountUserButton(profileTarget);
+      
+      initDashboardCore();
+    } else {
+      // 🔒 Signed Out! Block application views and present the beautiful native Clerk Sign-In portal
+      document.getElementById('appContainer').style.display = 'none';
+      document.getElementById('authScreen').style.display = 'flex';
+      
+      window.Clerk.mountSignIn(document.getElementById('clerkAuthTarget'), {
+        appearance: {
+          variables: { colorPrimary: '#3b82f6', colorBackground: '#111827', colorText: '#ffffff' }
+        }
+      });
+    }
+  } catch (err) {
+    console.error("Clerk system error:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initializeClerkAuthentication);
