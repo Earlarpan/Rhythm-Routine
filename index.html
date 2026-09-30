@@ -12,13 +12,21 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <!-- Auth Interface Shield (Shows up when user is signed out) -->
+    <div id="authScreen" class="auth-overlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0f19; z-index: 9999; justify-content: center; align-items: center;">
+      <div id="clerkAuthTarget"></div>
+    </div>
+
+    <!-- Main Workspace Application Shell (Hidden until user logs in successfully) -->
+    <div id="appContainer" class="app-shell" style="display: none;">
       <aside class="sidebar">
-        <div class="brand-block">
-          <div class="brand-mark">T</div>
-          <div>
-            <p class="eyebrow">Agent OS</p>
-            <h1>Torien</h1>
+        <div class="brand-block" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="brand-mark">T</div>
+            <div>
+              <p class="eyebrow">Agent OS</p>
+              <h1>Torien</h1>
+            </div>
           </div>
         </div>
 
@@ -31,13 +39,8 @@
           <button type="button" class="nav-item" data-view="settings"><span>Settings</span></button>
         </nav>
 
-        <div class="status-card">
-          <div class="status-dot"></div>
-          <div>
-            <p class="eyebrow">System</p>
-            <strong>Agent online</strong>
-          </div>
-        </div>
+        <!-- Clerk Profile / Logout Interface Anchor -->
+        <div id="userProfileButton" style="padding: 16px; border-top: 1px solid #1e293b; margin-top: auto;"></div>
       </aside>
 
       <main class="workspace">
@@ -147,25 +150,25 @@
               <span class="capability-icon">R</span>
               <strong>Research Agent</strong>
               <span>Analyze supplied sources, extract findings, and explain evidence and uncertainty.</span>
-              <small class="agent-card-status">Torien</small>
+              <small class="agent-card-status">Ready</small>
             </button>
             <button type="button" class="agent-card" data-agent="planning">
               <span class="capability-icon">P</span>
               <strong>Planning Agent</strong>
               <span>Turn goals into milestones, priorities, owners, and practical next steps.</span>
-              <small class="agent-card-status">Torien</small>
+              <small class="agent-card-status">Ready</small>
             </button>
             <button type="button" class="agent-card" data-agent="code">
               <span class="capability-icon">C</span>
               <strong>Code Agent</strong>
               <span>Explain code, debug errors, and draft implementations with verification steps.</span>
-              <small class="agent-card-status">Torien</small>
+              <small class="agent-card-status">Ready</small>
             </button>
             <button type="button" class="agent-card" data-agent="automation">
               <span class="capability-icon">A</span>
               <strong>Automation Agent</strong>
               <span>Design repeatable workflows and explain what can and cannot be automated.</span>
-              <small class="agent-card-status">Torien</small>
+              <small class="agent-card-status">Ready</small>
             </button>
           </div>
 
@@ -178,7 +181,7 @@
                   <p class="eyebrow">Task specialist</p>
                   <h3 id="agentHeading">Torien Agent</h3>
                 </div>
-                <span id="engineStatus" class="status-pill">Ready</span>
+                <span id="engineStatus" class="status-pill" style="color: rgb(52, 211, 153);">Ready</span>
               </div>
             </header>
             
@@ -198,6 +201,16 @@
 
     <button id="navBackdrop" class="nav-back-drop" type="button" aria-label="Close navigation" hidden></button>
 
+    <!-- Clerk Core Web Component Platform Bridge Loader -->
+    <script 
+      async 
+      crossorigin="anonymous" 
+      data-clerk-publishable-key="pk_test_dG9waWNhbC1tdWxsZXQtMTg0MC5jbGVyay5hY2NvdW50cy5kZXYk" 
+      src="https://vercel.app" 
+      type="text/javascript">
+    </script>
+
     <script src="app.js"></script>
   </body>
 </html>
+
