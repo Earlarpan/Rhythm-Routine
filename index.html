@@ -10,15 +10,6 @@
     <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="styles.css" />
-    
-    <!-- Core Clerk Embedded Global Platform Engine Initialization -->
-    <script 
-      async
-      crossorigin="anonymous" 
-      data-clerk-publishable-key="pk_test_dG9waWNhbC1tdWxsZXQtMTg0MC5jbGVyay5hY2NvdW50cy5kZXYk" 
-      src="https://accounts.dev" 
-      type="text/javascript">
-    </script>
   </head>
   <body>
     <!-- Auth Interface Shield (Shows up when user is signed out) -->
@@ -48,7 +39,7 @@
           <button type="button" class="nav-item" data-view="settings"><span>Settings</span></button>
         </nav>
 
-        <!-- Clerk Profile / Logout Interface Anchor -->
+        <!-- Profile / Logout Interface Anchor -->
         <div id="userProfileButton" style="padding: 16px; border-top: 1px solid #1e293b; margin-top: auto;"></div>
       </aside>
 
@@ -210,12 +201,6 @@
 
     <button id="navBackdrop" class="nav-back-drop" type="button" aria-label="Close navigation" hidden></button>
 
-    <!-- Independent Auto-Mount Execution Engine -->
-    <script>
-      function bootClerkInterfaceSystem() {
-        if (!window.Clerk) {
-          setTimeout(bootClerkInterfaceSystem, 50);
-          return;
-        }
-        window.Clerk.load().then(() => {
-          if (window.Clerk.user) {
+    <script src="app.js"></script>
+  </body>
+</html>
