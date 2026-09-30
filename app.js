@@ -44,6 +44,7 @@ function openAgent(id) {
   updateEngineStatus();
 }
 
+// Fixed visual routing engine
 function showView(v) {
   const av = ['overview', 'agents', ...Object.keys(sectionContent)].includes(v) ? v : 'overview', s = sectionContent[av];
   if (overviewView) overviewView.hidden = av !== 'overview'; if (agentsView) agentsView.hidden = av !== 'agents'; if (sectionView) sectionView.hidden = !s;
@@ -60,7 +61,6 @@ async function handlePrompt(txt) {
   } catch { return "Failed to connect to backend."; }
 }
 
-// Initialize Application UI Controls
 function initDashboardCore() {
   navItems.forEach(b => b.addEventListener('click', () => showView(b.getAttribute('data-view'))));
   agentCards.forEach(c => c.addEventListener('click', () => openAgent(c.getAttribute('data-agent'))));
@@ -88,31 +88,33 @@ function initDashboardCore() {
   loadAgentStatus();
 }
 
-// Clerk Authentication State Guard System Loop
-window.addEventListener('load', async () => {
-  // Wait safely for Clerk script injection payload from index.html
-  if (window.Clerk) {
-    try {
-      await window.Clerk.load();
-      
-      if (window.Clerk.user) {
-        // User logged in -> Unlock system layout
-        document.getElementById('authScreen').style.display = 'none';
-        document.getElementById('appContainer').style.display = 'flex';
-        
-        // Build the native Clerk profile user logout button anchor interface
-        window.Clerk.mountUserButton(document.getElementById('userProfileButton'));
-        initDashboardCore();
-      } else {
-        // User logged out -> Force mount the beautiful sign-in layout interface
-        document.getElementById('appContainer').style.display = 'none';
-        document.getElementById('authScreen').style.display = 'flex';
-        window.Clerk.mountSignIn(document.getElementById('clerkAuthTarget'), {
-          appearance: { variables: { colorPrimary: '#3b82f6', colorBackground: '#1e293b', colorText: '#ffffff' } }
-        });
-      }
-    } catch (err) {
-      console.error("Clerk initialization failed:", err);
-    }
+// Robust Clerk Loading state observer
+async function startClerkAuthFlow() {
+  if (!window.Clerk) {
+    // Retry in 100ms if script is still downloading asynchronously
+    setTimeout(startClerkAuthFlow, 100);
+    return;
   }
-});
+  
+  try {
+    await window.Clerk.load();
+    
+    if (window.Clerk.user) {
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('appContainer').style.display = 'flex';
+      window.Clerk.mountUserButton(document.getElementById('userProfileButton'));
+      initDashboardCore();
+    } else {
+      document.getElementById('appContainer').style.display = 'none';
+      document.getElementById('authScreen').style.display = 'flex';
+      window.Clerk.mountSignIn(document.getElementById('clerkAuthTarget'), {
+        appearance: { variables: { colorPrimary: '#3b82f6', colorBackground: '#1e293b', colorText: '#ffffff' } }
+      });
+    }
+  } catch (err) {
+    console.error("Clerk setup error:", err);
+  }
+}
+
+// Fire the setup check loop instantly upon tab mount
+document.addEventListener("DOMContentLoaded", startClerkAuthFlow);
