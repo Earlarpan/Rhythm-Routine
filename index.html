@@ -3,180 +3,127 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Torien</title>
-    <meta name="description" content="Torien is an AI agent workspace for planning, research, and automation." />
+    <title>Astro OS</title>
+    <meta name="description" content="Astro OS - Next-gen decentralized AI specialist operations center." />
     <link rel="preconnect" href="https://googleapis.com" />
     <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Futuristic Design Token Overrides for Index Interface */
+      :root {
+        --neon-cyan: #00f0ff;
+        --neon-purple: #bd00ff;
+        --neon-green: #39ff14;
+        --dark-bg: #060913;
+        --card-bg: #0d1326;
+        --border-glow: #1b264f;
+      }
+      body {
+        background-color: var(--dark-bg) !important;
+        font-family: 'Inter', sans-serif;
+      }
+      .font-futuristic {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+    </style>
   </head>
   <body>
-    <!-- Custom AI Authentication Screen (ChatGPT/Claude Style Card Layout) -->
-    <div id="authScreen" class="auth-overlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0f19; z-index: 9999; justify-content: center; align-items: center; font-family: 'Inter', sans-serif;">
-      <div style="background: #111827; padding: 40px; border-radius: 16px; border: 1px solid #1f2937; width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+    <!-- 🔑 Custom AI Authentication Screen (ChatGPT/Claude Style Card Layout - Fully Functional Switcher Fix) -->
+    <div id="authScreen" class="auth-overlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #05070f 0%, #0c1020 100%); z-index: 9999; justify-content: center; align-items: center;">
+      <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--border-glow); width: 380px; text-align: center; box-shadow: 0 0 40px rgba(0, 240, 255, 0.15); backdrop-filter: blur(8px);">
         <!-- Logo Header -->
-        <div style="width: 52px; height: 52px; background: #3b82f6; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; color: white; margin: 0 auto 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">T</div>
-        <h2 id="authTitle" style="color: white; margin-bottom: 6px; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Welcome back</h2>
-        <p id="authSubtitle" style="color: #9ca3af; font-size: 14px; margin-bottom: 28px; margin-top: 0;">Sign in to your Torien Agent workspace</p>
+        <div class="font-futuristic" style="width: 56px; height: 56px; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 26px; color: white; margin: 0 auto 20px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);">A</div>
+        <h2 id="authTitle" class="font-futuristic" style="color: white; margin-bottom: 6px; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Welcome back</h2>
+        <p id="authSubtitle" style="color: #94a3b8; font-size: 14px; margin-bottom: 28px; margin-top: 0;">Sign in to your Astro Agent workspace</p>
         
         <!-- Error Alert Bar -->
-        <div id="authErrorMsg" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; text-align: left;"></div>
+        <div id="authErrorMsg" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; text-align: left; line-height: 1.4;"></div>
 
         <!-- Dynamic Form Fields -->
-        <form id="customAuthForm" onsubmit="return false;">
-          <div id="nameFieldContainer" style="display: none; text-align: left; margin-bottom: 16px;">
-            <label style="color: #9ca3af; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Full Name</label>
-            <input id="authName" type="text" placeholder="John Doe" style="width: 100%; padding: 12px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none; transition: border 0.2s;" />
+        <form id="customAuthForm" action="#" method="POST">
+          <div id="nameFieldContainer" style="display: none; text-align: left; margin-bottom: 18px;">
+            <label style="color: #94a3b8; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Full Name</label>
+            <input id="authName" type="text" placeholder="John Doe" style="width: 100%; padding: 12px 14px; background: #121b36; border: 1px solid #1e293b; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none;" />
           </div>
 
-          <div style="text-align: left; margin-bottom: 16px;">
-            <label style="color: #9ca3af; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Email Address</label>
-            <input id="authEmail" type="email" placeholder="name@domain.com" required style="width: 100%; padding: 12px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none; transition: border 0.2s;" />
+          <div style="text-align: left; margin-bottom: 18px;">
+            <label style="color: #94a3b8; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Email Address</label>
+            <input id="authEmail" type="email" placeholder="name@domain.com" style="width: 100%; padding: 12px 14px; background: #121b36; border: 1px solid #1e293b; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none;" />
           </div>
           
-          <div style="text-align: left; margin-bottom: 26px;">
-            <label style="color: #9ca3af; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Password</label>
-            <input id="authPass" type="password" placeholder="••••••••" required style="width: 100%; padding: 12px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none; transition: border 0.2s;" />
+          <div style="text-align: left; margin-bottom: 28px;">
+            <label style="color: #94a3b8; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Password</label>
+            <input id="authPass" type="password" placeholder="••••••••" style="width: 100%; padding: 12px 14px; background: #121b36; border: 1px solid #1e293b; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none;" />
           </div>
           
-          <button id="authActionBtn" type="submit" style="width: 100%; padding: 13px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">Continue</button>
+          <button id="authActionBtn" type="submit" style="width: 100%; padding: 14px; background: linear-gradient(90deg, #00f0ff, #7000ff); border: none; border-radius: 8px; color: white; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.25);">Continue</button>
         </form>
 
         <!-- Toggle Dynamic Switch links -->
-        <p style="color: #9ca3af; font-size: 14px; margin-top: 28px; margin-bottom: 0;">
+        <p style="color: #94a3b8; font-size: 14px; margin-top: 28px; margin-bottom: 0;">
           <span id="switchPromptText">Don't have an account?</span> 
-          <a id="authSwitchLink" href="#" style="color: #3b82f6; text-decoration: none; font-weight: 500; margin-left: 4px;">Sign up</a>
+          <a id="authSwitchLink" href="javascript:void(0);" style="color: var(--neon-cyan); text-decoration: none; font-weight: 600; margin-left: 4px; border-bottom: 1px dotted var(--neon-cyan);">Sign up</a>
         </p>
       </div>
     </div>
 
     <!-- Main Workspace Application Shell -->
-    <div id="appContainer" class="app-shell" style="display: none;">
-      <aside class="sidebar">
-        <div class="brand-block" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <div id="appContainer" class="app-shell" style="display: none; background: var(--dark-bg);">
+      <aside class="sidebar" style="background: #090e1e; border-right: 1px solid var(--border-glow); box-shadow: 5px 0 25px rgba(0,0,0,0.5);">
+        <div class="brand-block" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 24px 16px;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="brand-mark">T</div>
+            <div class="brand-mark font-futuristic" style="background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); box-shadow: 0 0 10px var(--neon-cyan);">A</div>
             <div>
-              <p class="eyebrow">Agent OS</p>
-              <h1>Torien</h1>
+              <p class="eyebrow" style="color: var(--neon-cyan); letter-spacing: 2px;">NEURAL NET OS</p>
+              <h1 class="font-futuristic" style="color: white; font-size: 20px; font-weight: 700; margin: 0;">Astro</h1>
             </div>
           </div>
         </div>
 
-        <nav id="sidebarNav" class="sidebar-nav" aria-label="Primary navigation">
-          <button type="button" class="nav-item active" data-view="overview"><span>Overview</span></button>
-          <button type="button" class="nav-item" data-view="agents"><span>Agents</span></button>
-          <button type="button" class="nav-item" data-view="workflows"><span>Workflows</span></button>
-          <button type="button" class="nav-item" data-view="memory"><span>Memory</span></button>
-          <button type="button" class="nav-item" data-view="plugins"><span>Plugins</span></button>
-          <button type="button" class="nav-item" data-view="settings"><span>Settings</span></button>
+        <nav id="sidebarNav" class="sidebar-nav" aria-label="Primary navigation" style="padding: 0 12px;">
+          <button type="button" class="nav-item active" data-view="overview" style="margin-bottom: 6px; border-radius: 8px; font-weight: 600;"><span>Overview</span></button>
+          <button type="button" class="nav-item" data-view="agents" style="margin-bottom: 6px; border-radius: 8px; font-weight: 600;"><span>AI Specialists</span></button>
+          <button type="button" class="nav-item" data-view="workflows" style="margin-bottom: 6px; border-radius: 8px; font-weight: 600;"><span>Automations</span></button>
+          <button type="button" class="nav-item" data-view="memory" style="margin-bottom: 6px; border-radius: 8px; font-weight: 600;"><span>Neural Vector Store</span></button>
+          <button type="button" class="nav-item" data-view="plugins" style="margin-bottom: 6px; border-radius: 8px; font-weight: 600;"><span>Integrations</span></button>
+          <button type="button" class="nav-item" data-view="settings" style="margin-bottom: 6px; border-radius: 8px; font-weight: 600; border: 1px dashed rgba(0, 240, 255, 0.2);"><span>Settings Config</span></button>
         </nav>
 
-        <!-- Active User Account Row Display (Built inside dashboard framework footer) -->
-        <div id="userProfileButton" style="padding: 16px; border-top: 1px solid #1e293b; margin-top: auto;"></div>
+        <!-- Profile Slot Placeholder inside Sidebar Footer -->
+        <div id="userProfileButton" style="padding: 16px; border-top: 1px solid var(--border-glow); margin-top: auto;"></div>
       </aside>
 
-      <main class="workspace">
-        <header class="topbar">
+      <main class="workspace" style="background: radial-gradient(circle at top right, #0e1630 0%, #060913 70%);">
+        <header class="topbar" style="background: rgba(9, 14, 30, 0.8); border-bottom: 1px solid var(--border-glow); backdrop-filter: blur(10px);">
           <div class="topbar-leading">
             <button id="navToggle" class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="sidebarNav" aria-expanded="false">
               <span></span><span></span><span></span>
             </button>
             <div>
-              <p class="eyebrow">AI assistant</p>
-              <h2 id="pageTitle">Operations Center</h2>
+              <p class="eyebrow" id="topbarCategory" style="color: var(--neon-purple); letter-spacing: 1px;">CORE TERMINAL</p>
+              <h2 id="pageTitle" class="font-futuristic" style="color: white; font-size: 22px; font-weight: 700;">Operations Center</h2>
             </div>
           </div>
 
           <div class="header-actions">
-            <button type="button" class="secondary-btn">New task</button>
-            <button type="button" class="primary-btn">Launch agent</button>
+            <button type="button" class="secondary-btn" style="border: 1px solid var(--neon-cyan); color: white; background: transparent; border-radius: 6px;">Quantum Stream</button>
+            <button type="button" class="primary-btn" style="background: var(--neon-purple); color: white; border-radius: 6px; border: none; box-shadow: 0 0 10px var(--neon-purple);">Sync Matrix</button>
           </div>
         </header>
 
-        <!-- Overview Panel View -->
+        <!-- 1. Overview Panel View -->
         <section id="overviewView" class="page-view">
           <section class="hero-grid">
-            <div class="hero-card">
+            <div class="hero-card" style="background: var(--card-bg); border: 1px solid var(--border-glow); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
               <div class="agent-header">
                 <div>
-                  <p class="eyebrow">Active agent</p>
-                  <h3>Torien</h3>
+                  <p class="eyebrow" style="color: var(--neon-cyan);">ACTIVE MASTER CORE</p>
+                  <h3 class="font-futuristic" style="color: white; font-size: 20px; font-weight: 700;">Astro Agent Engine</h3>
                 </div>
-                <span id="agentStatus" class="status-pill online">Online</span>
+                <span id="agentStatus" class="status-pill online" style="background: rgba(57, 255, 20, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green);">CONNECTED</span>
               </div>
 
-              <div class="metrics-row">
-                <div class="metric-box">
-                  <span>Tasks</span>
-                  <strong>24</strong>
-                </div>
-                <div class="metric-box">
-                  <span>Research</span>
-                  <strong>18</strong>
-                </div>
-                <div class="metric-box">
-                  <span>Actions</span>
-                  <strong>92%</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="hero-card alt">
-              <p class="eyebrow">Current mission</p>
-              <h3>Find the fastest path to launch</h3>
-              <ul class="mission-list">
-                <li>Map project priorities</li>
-                <li>Draft action plan</li>
-                <li>Monitor blockers</li>
-              </ul>
-            </div>
-          </section>
-
-          <section class="main-panel">
-            <div class="chat-panel">
-              <div class="panel-header">
-                <div>
-                  <p class="eyebrow">Conversation</p>
-                  <h3>Agent chat</h3>
-                </div>
-                <button type="button" class="ghost-btn">View logs</button>
-              </div>
-
-              <div id="chatThread" class="chat-thread" aria-live="polite">
-                <div class="message agent">
-                  <div class="avatar">AI</div>
-                  <div class="bubble">
-                    <strong>Torien</strong>
-                    <p>Hello. I can research, plan, summarize, and help build the next move for your workflow.</p>
-                  </div>
-                </div>
-              </div>
-
-              <form id="promptForm" class="composer">
-                <input id="promptInput" type="text" placeholder="Ask Torien to research, plan, summarize, or code..." aria-label="Ask the AI agent" />
-                <button type="submit">Send</button>
-              </form>
-            </div>
-          </section>
-        </section>
-
-        <!-- Dynamic Menu Static Sections View -->
-        <section id="sectionView" class="page-view section-page" hidden>
-          <p id="sectionEyebrow" class="eyebrow"></p>
-          <h3 id="sectionHeading"></h3>
-          <p id="sectionDescription"></p>
-        </section>
-
-        <!-- Specialists Agents View Section -->
-        <section id="agentsView" class="page-view agents-view" hidden>
-          <header class="agents-heading">
-            <div>
-              <p class="eyebrow">Torien specialists</p>
-              <h3>Choose an agent</h3>
-              <p class="agents-description">Each agent is tailored to a specific kind of work.</p>
-            </div>
-          </header>
-
-          <div id="agentGallery" class="agent-gallery" aria-label="Torien agents">
+              <div class="metrics-row" style="margin-top: 24px;">
+                <div class="metric-box" style="background: #111a36; border: 1px solid rgba(0,240,255,0.15);">
+                  <span style="color: #94a3b8;">Neural Nodes</span>
