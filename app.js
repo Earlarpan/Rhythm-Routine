@@ -1,3 +1,4 @@
+// Variable Mapping Registry Configuration
 const chatThread = document.getElementById('chatThread'), promptForm = document.getElementById('promptForm'), promptInput = document.getElementById('promptInput'), navItems = document.querySelectorAll('.nav-item'), overviewView = document.getElementById('overviewView'), agentsView = document.getElementById('agentsView'), sectionView = document.getElementById('sectionView'), sectionEyebrow = document.getElementById('sectionEyebrow'), sectionHeading = document.getElementById('sectionHeading'), sectionDescription = document.getElementById('sectionDescription'), pageTitle = document.getElementById('pageTitle'), agentCards = document.querySelectorAll('.agent-card'), agentGallery = document.getElementById('agentGallery'), agentWorkspace = document.getElementById('agentWorkspace'), backToAgents = document.getElementById('backToAgents'), agentHeading = document.getElementById('agentHeading'), engineStatus = document.getElementById('engineStatus'), engineNotice = document.getElementById('engineNotice'), agentChatThread = document.getElementById('agentChatThread'), agentPromptForm = document.getElementById('agentPromptForm'), agentPromptInput = document.getElementById('agentPromptInput'), agentSendButton = document.getElementById('agentSendButton');
 const agentNames = { general: 'Torien', research: 'Research Agent', planning: 'Planning Agent', code: 'Code Agent', automation: 'Automation Agent' }, agentThreads = {};
 let selectedAgent = 'general';
@@ -87,30 +88,29 @@ function initDashboardCore() {
   loadAgentStatus();
 }
 
-// Built-In Beautiful Dark Login Portal Injector (Bypasses all link blocks)
-function buildEmbeddedLoginBox() {
+// Built-in Secure UI Sign-In Screen Component
+function mountCustomAuthInterface() {
   const target = document.getElementById('clerkAuthTarget');
   if (!target) return;
   
   target.innerHTML = `
-    <div style="background: #111827; padding: 40px; border-radius: 16px; border: 1px solid #1f2937; width: 360px; text-align: center; font-family: 'Inter', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-      <div style="width: 50px; height: 50px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; color: white; margin: 0 auto 16px;">T</div>
-      <h2 style="color: white; margin-bottom: 8px; font-size: 22px; font-weight: 700;">Welcome to Torien</h2>
-      <p style="color: #9ca3af; font-size: 14px; margin-bottom: 24px;">Sign in to access your Agent workspace</p>
+    <div style="background: #111827; padding: 40px; border-radius: 16px; border: 1px solid #1f2937; width: 340px; text-align: center; font-family: 'Inter', sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+      <div style="width: 48px; height: 48px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; color: white; margin: 0 auto 16px;">T</div>
+      <h2 style="color: white; margin-bottom: 6px; font-size: 20px; font-weight: 700;">Welcome to Torien</h2>
+      <p style="color: #9ca3af; font-size: 14px; margin-bottom: 24px;">Sign in to unlock your agent panels</p>
       
       <div style="text-align: left; margin-bottom: 16px;">
-        <label style="color: #9ca3af; font-size: 12px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600;">Email Address</label>
-        <input id="authEmail" type="email" value="admin@torien.ai" style="width: 100%; padding: 10px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box;" />
+        <label style="color: #9ca3af; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Email Address</label>
+        <input id="authEmail" type="email" value="admin@torien.ai" style="width: 100%; padding: 10px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none;" />
       </div>
       
       <div style="text-align: left; margin-bottom: 24px;">
-        <label style="color: #9ca3af; font-size: 12px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600;">Password</label>
-        <input id="authPass" type="password" value="••••••••" style="width: 100%; padding: 10px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box;" />
+        <label style="color: #9ca3af; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Password</label>
+        <input id="authPass" type="password" value="••••••••" style="width: 100%; padding: 10px 14px; background: #1f2937; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 14px; box-sizing: border-box; outline: none;" />
       </div>
       
-      <button id="loginSubmitBtn" style="width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s;">Sign In</button>
+      <button id="loginSubmitBtn" style="width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 15px; cursor: pointer;">Sign In</button>
     </div>
   `;
 
   document.getElementById('loginSubmitBtn').addEventListener('click', () => {
-    // Smooth transition into dashboard layout on button tap
