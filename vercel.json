@@ -1,12 +1,5 @@
 {
   "version": 2,
-  "name": "torien-dashboard-fixed",
-  "functions": {
-    "api/chat.js": {
-      "runtime": "nodejs18.x",
-      "memory": 1024
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
