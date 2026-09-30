@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Torien </title>
+    <title>Torien</title>
     <meta name="description" content="Torien is an AI agent workspace for planning, research, and automation." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://googleapis.com" />
+    <link rel="preconnect" href="https://gstatic.com" crossorigin />
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -58,95 +58,81 @@
           </div>
         </header>
 
+        <!-- Overview Panel View -->
         <section id="overviewView" class="page-view">
-        <section class="hero-grid">
-          <div class="hero-card">
-            <div class="agent-header">
-              <div>
-                <p class="eyebrow">Active agent</p>
-                <h3>Torien</h3>
-              </div>
-              <span id="agentStatus" class="status-pill online">Online</span>
-            </div>
-
-            <div class="metrics-row">
-              <div class="metric-box">
-                <span>Tasks</span>
-                <strong>24</strong>
-              </div>
-              <div class="metric-box">
-                <span>Research</span>
-                <strong>18</strong>
-              </div>
-              <div class="metric-box">
-                <span>Actions</span>
-                <strong>92%</strong>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="hero-card alt">
-            <p class="eyebrow">Current mission</p>
-            <h3>Find the fastest path to launch</h3>
-            <ul class="mission-list">
-              <li>Map project priorities</li>
-              <li>Draft action plan</li>
-              <li>Monitor blockers</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="main-panel">
-          <div class="chat-panel">
-            <div class="panel-header">
-              <div>
-                <p class="eyebrow">Conversation</p>
-                <h3>Agent chat</h3>
-              </div>
-              <button type="button" class="ghost-btn">View logs</button>
-            </div>
-
-            <div id="chatThread" class="chat-thread" aria-live="polite">
-              <div class="message agent">
-                <div class="avatar">AI</div>
-                <div class="bubble">
-                  <strong>Torien</strong>
-                  <p>Hello. I can research, plan, summarize, and help build the next move for your workflow.</p>
+          <section class="hero-grid">
+            <div class="hero-card">
+              <div class="agent-header">
+                <div>
+                  <p class="eyebrow">Active agent</p>
+                  <h3>Torien</h3>
                 </div>
+                <span id="agentStatus" class="status-pill online">Online</span>
               </div>
 
-              <div class="message user">
-                <div class="bubble">
-                  <strong>You</strong>
-                  <p>Build a launch plan for a product sprint.</p>
+              <div class="metrics-row">
+                <div class="metric-box">
+                  <span>Tasks</span>
+                  <strong>24</strong>
                 </div>
-              </div>
-
-              <div class="message agent">
-                <div class="avatar">AI</div>
-                <div class="bubble">
-                  <strong>Torien</strong>
-                  <p>Here is the plan: define scope, validate assumptions, assign owners, set milestones, and review risks before execution.</p>
+                <div class="metric-box">
+                  <span>Research</span>
+                  <strong>18</strong>
+                </div>
+                <div class="metric-box">
+                  <span>Actions</span>
+                  <strong>92%</strong>
                 </div>
               </div>
             </div>
 
-            <form id="promptForm" class="composer">
-              <input id="promptInput" type="text" placeholder="Ask Torien to research, plan, summarize, or code..." aria-label="Ask the AI agent" />
-              <button type="submit">Send</button>
-            </form>
-          </div>
+            <div class="hero-card alt">
+              <p class="eyebrow">Current mission</p>
+              <h3>Find the fastest path to launch</h3>
+              <ul class="mission-list">
+                <li>Map project priorities</li>
+                <li>Draft action plan</li>
+                <li>Monitor blockers</li>
+              </ul>
+            </div>
+          </section>
 
-        </section>
+          <section class="main-panel">
+            <div class="chat-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Conversation</p>
+                  <h3>Agent chat</h3>
+                </div>
+                <button type="button" class="ghost-btn">View logs</button>
+              </div>
+
+              <div id="chatThread" class="chat-thread" aria-live="polite">
+                <div class="message agent">
+                  <div class="avatar">AI</div>
+                  <div class="bubble">
+                    <strong>Torien</strong>
+                    <p>Hello. I can research, plan, summarize, and help build the next move for your workflow.</p>
+                  </div>
+                </div>
+              </div>
+
+              <form id="promptForm" class="composer">
+                <input id="promptInput" type="text" placeholder="Ask Torien to research, plan, summarize, or code..." aria-label="Ask the AI agent" />
+                <button type="submit">Send</button>
+              </form>
+            </div>
+          </section>
         </section>
 
+        <!-- Dynamic Menu Static Sections View -->
         <section id="sectionView" class="page-view section-page" hidden>
           <p id="sectionEyebrow" class="eyebrow"></p>
           <h3 id="sectionHeading"></h3>
           <p id="sectionDescription"></p>
         </section>
 
+        <!-- Specialists Agents View Section -->
         <section id="agentsView" class="page-view agents-view" hidden>
           <header class="agents-heading">
             <div>
@@ -183,6 +169,7 @@
             </button>
           </div>
 
+          <!-- Active Specialist Chat Workspace panel -->
           <section id="agentWorkspace" class="agent-workspace" hidden>
             <header class="agent-workspace-header">
               <button id="backToAgents" class="secondary-btn" type="button">All agents</button>
@@ -191,118 +178,27 @@
                   <p class="eyebrow">Task specialist</p>
                   <h3 id="agentHeading">Torien Agent</h3>
                 </div>
-                <span id="engineStatus" class="status-pill">Checking</span>
+                <span id="engineStatus" class="status-pill">Ready</span>
               </div>
             </header>
-
-            <p id="engineNotice" class="engine-notice" role="status" aria-live="polite"></p>
+            
+            <p id="engineNotice" class="engine-notice" role="status" aria-live="polite">Torien is ready via GitHub Models backend.</p>
+            
             <div class="chat-panel agent-chat-panel">
               <div id="agentChatThread" class="chat-thread agent-chat-thread" aria-live="polite"></div>
-
               <form id="agentPromptForm" class="composer">
-                <textarea id="agentPromptInput" rows="2" placeholder="Ask this Torien agent..." aria-label="Message the selected Torien agent" disabled></textarea>
-                <button id="agentSendButton" type="submit" disabled>Send</button>
+                <textarea id="agentPromptInput" rows="2" placeholder="Ask this Torien agent..." aria-label="Message the selected Torien agent"></textarea>
+                <button id="agentSendButton" type="submit">Send</button>
               </form>
             </div>
           </section>
         </section>
       </main>
     </div>
-    <button id="navBackdrop" class="nav-backdrop" type="button" aria-label="Close navigation" hidden></button>
 
+    <button id="navBackdrop" class="nav-back-drop" type="button" aria-label="Close navigation" hidden></button>
+
+    <!-- Connects dashboard panels straight to your app.js system script -->
     <script src="app.js"></script>
   </body>
-    <!-- JavaScript Engine connecting the Chat Box directly to your Vercel Token -->
-    <script>
-    // 1. Automatically fix warning flags on setup status tags
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll('.agent-card-status, #engineStatus').forEach(el => {
-            el.textContent = 'ACTIVE';
-            el.style.color = '#34d399'; // Nice glowing agent green
-        });
-    });
-
-    // 2. Call the serverless backend function we built inside api/chat.js
-    async function sendPromptToAgent(promptText) {
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: promptText })
-            });
-            
-            const data = await response.json();
-            
-            if (data.error) {
-                return "Error from AI backend: " + data.error;
-            }
-            
-            return data.reply; // Live output from gpt-4o-mini!
-        } catch (err) {
-            console.error(err);
-            return "Failed to reach Torien API. Check your Vercel environment variables.";
-        }
-    }
-
-    // 3. Connect your user interface text inputs to the backend engine
-    document.addEventListener("DOMContentLoaded", () => {
-        const promptForm = document.getElementById('promptForm') || document.getElementById('agentPromptForm');
-        const promptInput = document.getElementById('promptInput') || document.getElementById('agentPromptInput');
-        const chatThread = document.getElementById('chatThread') || document.getElementById('agentChatThread');
-
-        // Force enable inputs if they were set to disabled in template
-        if (promptInput) promptInput.removeAttribute('disabled');
-        const sendBtn = document.getElementById('agentSendButton') || promptForm?.querySelector('button');
-        if (sendBtn) sendBtn.removeAttribute('disabled');
-
-        if (promptForm && promptInput && chatThread) {
-            promptForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const userText = promptInput.value.trim();
-                if (!userText) return;
-
-                // Clear out the input bar instantly so you can type another question
-                promptInput.value = '';
-
-                // Create and inject your message bubble into the chat center container
-                const userMessageDiv = document.createElement('div');
-                userMessageDiv.className = 'message user';
-                userMessageDiv.innerHTML = `
-                    <div class="bubble">
-                        <strong>You</strong>
-                        <p>${userText}</p>
-                    </div>
-                `;
-                chatThread.appendChild(userMessageDiv);
-                chatThread.scrollTop = chatThread.scrollHeight; // Scroll down smoothly
-
-                // Generate a temporary typing element for the Torien agent
-                const thinkingMessageDiv = document.createElement('div');
-                thinkingMessageDiv.className = 'message agent';
-                thinkingMessageDiv.innerHTML = `
-                    <div class="avatar">AI</div>
-                    <div class="bubble">
-                        <strong>Torien</strong>
-                        <p style="color: #94a3b8; font-style: italic;">Thinking...</p>
-                    </div>
-                `;
-                chatThread.appendChild(thinkingMessageDiv);
-                chatThread.scrollTop = chatThread.scrollHeight;
-
-                // Fire the text over to the secure Vercel key channel
-                const aiAnswer = await sendPromptToAgent(userText);
-
-                // Swap out the placeholder text with your real live answer
-                thinkingMessageDiv.querySelector('p').style.color = '';
-                thinkingMessageDiv.querySelector('p').style.fontStyle = '';
-                thinkingMessageDiv.querySelector('p').textContent = aiAnswer;
-                chatThread.scrollTop = chatThread.scrollHeight;
-            });
-        }
-    });
-    </script>
-  </body>
 </html>
-
