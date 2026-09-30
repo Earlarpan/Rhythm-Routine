@@ -44,22 +44,12 @@ function showView(v) {
   if (s && sectionEyebrow && sectionHeading && sectionDescription) { sectionEyebrow.textContent = s.eyebrow; sectionHeading.textContent = s.heading; sectionDescription.textContent = s.description; }
   if (av === 'agents') { if (agentGallery) agentGallery.hidden = false; if (agentWorkspace) agentWorkspace.hidden = true; loadAgentStatus(); }
 }
-
-// Updated Network Diagnostic Connection Engine
 async function handlePrompt(txt) {
   try {
-    const res = await fetch('/api/chat', { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body: JSON.stringify({ message: txt }) 
-    });
-    const d = await res.json(); 
-    return d.error ? "Server Error: " + d.error : d.reply;
-  } catch (err) { 
-    return "Browser Network Error: " + err.message; 
-  }
+    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: txt }) });
+    const d = await res.json(); return d.error ? "Server Error: " + d.error : d.reply;
+  } catch { return "Failed to connect to backend."; }
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   navItems.forEach(b => b.addEventListener('click', () => showView(b.getAttribute('data-view'))));
   agentCards.forEach(c => c.addEventListener('click', () => openAgent(c.getAttribute('data-agent'))));
