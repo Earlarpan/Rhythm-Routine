@@ -1,6 +1,6 @@
 # Torien
 AI productivity workspace powered by Torien
-Plan Your Future Ahead
+
 
 ## Run locally
 
