@@ -1,17 +1,22 @@
-export default async function handler(req, res) {
+// Force Vercel to use the high-performance global Edge Runtime (bypasses network blocks!)
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(req) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { 'Content-Type': 'application/json' } });
   }
 
   try {
-    const { message } = req.body;
+    const { message } = await req.json();
     const token = process.env.GITHUB_TOKEN;
 
     if (!token) {
-      return res.status(500).json({ error: "Configuration Error: GITHUB_TOKEN is missing on Vercel." });
+      return new Response(JSON.stringify({ error: "Configuration Error: GITHUB_TOKEN is missing on Vercel." }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Direct, ultra-stable connection structure designed perfectly for Vercel servers
+    // Direct, unblocked edge stream request format
     const apiResponse = await fetch('https://github.ai', {
       method: 'POST',
       headers: {
@@ -28,29 +33,26 @@ export default async function handler(req, res) {
       })
     });
 
-    // If the response is broken, extract the text immediately to tell us why
     const responseText = await apiResponse.text();
     let data;
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      return res.status(500).json({ error: `Server sent unreadable response: ${responseText.slice(0, 100)}` });
+      return new Response(JSON.stringify({ error: `Server sent unreadable response: ${responseText.slice(0, 100)}` }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
     if (!apiResponse.ok) {
-      return res.status(apiResponse.status).json({ 
-        error: `GitHub Status (${apiResponse.status}): ${data.message || 'Token permission issue'}` 
-      });
+      return new Response(JSON.stringify({ error: `GitHub Status (${apiResponse.status}): ${data.message || 'Token permission issue'}` }), { status: apiResponse.status, headers: { 'Content-Type': 'application/json' } });
     }
 
     if (data && data.choices && data.choices[0] && data.choices[0].message) {
-      return res.status(200).json({ reply: data.choices[0].message.content });
+      return new Response(JSON.stringify({ reply: data.choices[0].message.content }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } else {
-      return res.status(500).json({ error: "Empty answer packet received." });
+      return new Response(JSON.stringify({ error: "Empty answer packet received." }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
   } catch (error) {
-    return res.status(500).json({ error: "Connection route blocked: " + error.message });
+    return new Response(JSON.stringify({ error: "Edge route interrupted: " + error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
 
