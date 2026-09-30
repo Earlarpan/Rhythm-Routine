@@ -1,6 +1,6 @@
 const chatThread = document.getElementById('chatThread'), promptForm = document.getElementById('promptForm'), promptInput = document.getElementById('promptInput'), navItems = document.querySelectorAll('.nav-item'), overviewView = document.getElementById('overviewView'), agentsView = document.getElementById('agentsView'), sectionView = document.getElementById('sectionView'), sectionEyebrow = document.getElementById('sectionEyebrow'), sectionHeading = document.getElementById('sectionHeading'), sectionDescription = document.getElementById('sectionDescription'), pageTitle = document.getElementById('pageTitle'), agentCards = document.querySelectorAll('.agent-card'), agentGallery = document.getElementById('agentGallery'), agentWorkspace = document.getElementById('agentWorkspace'), backToAgents = document.getElementById('backToAgents'), agentHeading = document.getElementById('agentHeading'), engineStatus = document.getElementById('engineStatus'), engineNotice = document.getElementById('engineNotice'), agentChatThread = document.getElementById('agentChatThread'), agentPromptForm = document.getElementById('agentPromptForm'), agentPromptInput = document.getElementById('agentPromptInput'), agentSendButton = document.getElementById('agentSendButton');
 const agentNames = { general: 'Torien', research: 'Research Agent', planning: 'Planning Agent', code: 'Code Agent', automation: 'Automation Agent' }, agentThreads = {};
-let selectedAgent = 'general', engineConfigured = true;
+let selectedAgent = 'general';
 
 const sectionContent = {
   workflows: { title: 'Workflows', eyebrow: 'Automation', heading: 'No workflows configured', description: 'Workflow creation is not available yet.' },
@@ -25,7 +25,6 @@ function createAgentMessage(r, t) {
   b.innerHTML = `<strong>${r === 'user' ? 'You' : agentNames[selectedAgent]}</strong><p>${t}</p>`; w.appendChild(b); agentChatThread.appendChild(w); agentChatThread.scrollTop = agentChatThread.scrollHeight;
 }
 
-// Fixed visual interface status locked globally to Ready 
 function updateEngineStatus() {
   if (engineStatus) { engineStatus.textContent = 'Ready'; engineStatus.style.color = '#34d399'; }
   if (agentSendButton) agentSendButton.disabled = false;
@@ -54,22 +53,15 @@ function showView(v) {
   if (av === 'agents') { if (agentGallery) agentGallery.hidden = false; if (agentWorkspace) agentWorkspace.hidden = true; loadAgentStatus(); }
 }
 
-// Live Node Connection Engine targeting /api/chat layout
 async function handlePrompt(txt) {
   try {
-    const res = await fetch('/api/chat', { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body: JSON.stringify({ message: txt }) 
-    });
-    const d = await res.json(); 
-    return d.error ? "Server Error: " + d.error : d.reply;
-  } catch (err) { 
-    return "Browser Connection Interrupted: " + err.message; 
-  }
+    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: txt }) });
+    const d = await res.json(); return d.error ? "Server Error: " + d.error : d.reply;
+  } catch { return "Failed to connect to backend."; }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// Initialize Application UI Controls
+function initDashboardCore() {
   navItems.forEach(b => b.addEventListener('click', () => showView(b.getAttribute('data-view'))));
   agentCards.forEach(c => c.addEventListener('click', () => openAgent(c.getAttribute('data-agent'))));
   if (backToAgents) backToAgents.addEventListener('click', () => { if (agentGallery) agentGallery.hidden = false; if (agentWorkspace) agentWorkspace.hidden = true; loadAgentStatus(); });
@@ -93,6 +85,34 @@ document.addEventListener("DOMContentLoaded", () => {
       agentThreads[selectedAgent].push({ role: 'assistant', content: ans });
     });
   }
-  
   loadAgentStatus();
+}
+
+// Clerk Authentication State Guard System Loop
+window.addEventListener('load', async () => {
+  // Wait safely for Clerk script injection payload from index.html
+  if (window.Clerk) {
+    try {
+      await window.Clerk.load();
+      
+      if (window.Clerk.user) {
+        // User logged in -> Unlock system layout
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'flex';
+        
+        // Build the native Clerk profile user logout button anchor interface
+        window.Clerk.mountUserButton(document.getElementById('userProfileButton'));
+        initDashboardCore();
+      } else {
+        // User logged out -> Force mount the beautiful sign-in layout interface
+        document.getElementById('appContainer').style.display = 'none';
+        document.getElementById('authScreen').style.display = 'flex';
+        window.Clerk.mountSignIn(document.getElementById('clerkAuthTarget'), {
+          appearance: { variables: { colorPrimary: '#3b82f6', colorBackground: '#1e293b', colorText: '#ffffff' } }
+        });
+      }
+    } catch (err) {
+      console.error("Clerk initialization failed:", err);
+    }
+  }
 });
