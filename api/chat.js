@@ -11,13 +11,12 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Configuration Error: GITHUB_TOKEN is missing on Vercel." });
     }
 
-    // Direct, ultra-compatible payload connection format for Vercel environments
+    // Direct, ultra-stable connection structure designed perfectly for Vercel servers
     const apiResponse = await fetch('https://github.ai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token.trim()}`,
-        'User-Agent': 'Vercel-Serverless-Function'
+        'Authorization': `Bearer ${token.trim()}`
       },
       body: JSON.stringify({
         messages: [
@@ -25,26 +24,33 @@ export default async function handler(req, res) {
           { role: "user", content: message }
         ],
         model: "openai/gpt-4o-mini",
-        temperature: 0.7,
-        max_tokens: 1000
+        temperature: 0.7
       })
     });
 
-    const data = await apiResponse.json();
+    // If the response is broken, extract the text immediately to tell us why
+    const responseText = await apiResponse.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      return res.status(500).json({ error: `Server sent unreadable response: ${responseText.slice(0, 100)}` });
+    }
 
     if (!apiResponse.ok) {
       return res.status(apiResponse.status).json({ 
-        error: `GitHub Server Rejected Request (${apiResponse.status}): ${data.message || 'Invalid Token Permissions'}` 
+        error: `GitHub Status (${apiResponse.status}): ${data.message || 'Token permission issue'}` 
       });
     }
 
     if (data && data.choices && data.choices[0] && data.choices[0].message) {
       return res.status(200).json({ reply: data.choices[0].message.content });
     } else {
-      return res.status(500).json({ error: "Received an empty response structure from the AI cluster." });
+      return res.status(500).json({ error: "Empty answer packet received." });
     }
 
   } catch (error) {
-    return res.status(500).json({ error: "Network stream interrupted: " + error.message });
+    return res.status(500).json({ error: "Connection route blocked: " + error.message });
   }
 }
+
