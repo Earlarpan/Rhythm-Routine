@@ -5,12 +5,19 @@ export default async function handler(req, res) {
 
   try {
     const { message } = req.body;
+    const token = process.env.GITHUB_TOKEN;
 
-    const response = await fetch('https://github.ai', {
+    if (!token) {
+      return res.status(500).json({ error: "Configuration Error: GITHUB_TOKEN is missing on Vercel." });
+    }
+
+    // Direct, ultra-compatible payload connection format for Vercel environments
+    const apiResponse = await fetch('https://github.ai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`
+        'Authorization': `Bearer ${token.trim()}`,
+        'User-Agent': 'Vercel-Serverless-Function'
       },
       body: JSON.stringify({
         messages: [
@@ -18,19 +25,26 @@ export default async function handler(req, res) {
           { role: "user", content: message }
         ],
         model: "openai/gpt-4o-mini",
-        temperature: 0.7
+        temperature: 0.7,
+        max_tokens: 1000
       })
     });
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.message || "GitHub API Error" });
+    const data = await apiResponse.json();
+
+    if (!apiResponse.ok) {
+      return res.status(apiResponse.status).json({ 
+        error: `GitHub Server Rejected Request (${apiResponse.status}): ${data.message || 'Invalid Token Permissions'}` 
+      });
     }
 
-    const aiReply = data.choices.message.content;
-    return res.status(200).json({ reply: aiReply });
+    if (data && data.choices && data.choices[0] && data.choices[0].message) {
+      return res.status(200).json({ reply: data.choices[0].message.content });
+    } else {
+      return res.status(500).json({ error: "Received an empty response structure from the AI cluster." });
+    }
+
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: "Network stream interrupted: " + error.message });
   }
 }
