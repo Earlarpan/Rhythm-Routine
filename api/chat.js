@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Clear any weird routing configurations by setting standard JSON headers immediately
   res.setHeader('Content-Type', 'application/json');
 
   if (req.method !== 'POST') {
@@ -14,7 +13,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Configuration Error: GITHUB_TOKEN variable is missing on Vercel settings profile." });
     }
 
-    // Direct, ultra-stable connection structure designed perfectly for Vercel servers
+    // Direct, highly-compatible endpoint connection string template for Vercel functions
     const apiResponse = await fetch('https://github.ai', {
       method: 'POST',
       headers: {
@@ -39,6 +38,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ reply: data.choices[0].message.content });
   } catch (error) {
-    return res.status(500).json({ error: "System pipeline crashed: " + error.message });
+    return res.status(500).json({ error: "Network connection failed inside server: " + error.message });
   }
 }
