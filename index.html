@@ -199,26 +199,5 @@
     <button id="navBackdrop" class="nav-back-drop" type="button" aria-label="Close navigation" hidden></button>
 
     <script src="app.js"></script>
-
-    <!-- Forced Visual Green Status Engine Patch -->
-    <script>
-      function forceGreenReadyBadges() {
-        document.querySelectorAll('.agent-card-status, #engineStatus').forEach(el => {
-          el.textContent = 'Ready';
-          el.style.color = '#34d399'; // Bright glowing dashboard green
-        });
-        const notice = document.getElementById('engineNotice');
-        if (notice) {
-          notice.textContent = 'Torien is ready via GitHub Models backend.';
-        }
-      }
-
-      // Check immediately when elements paint and when tabs change view
-      document.addEventListener("DOMContentLoaded", forceGreenReadyBadges);
-      window.addEventListener("load", forceGreenReadyBadges);
-      document.addEventListener("click", () => {
-        setTimeout(forceGreenReadyBadges, 50); // Catches menu switches instantly
-      });
-    </script>
   </body>
 </html>
